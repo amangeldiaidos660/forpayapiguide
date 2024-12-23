@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>API Сервис</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f3f3;
+        }
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+        }
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #f0f0f0;
+            border-radius: 5px 5px 0 0;
+            width: 50%;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 1px solid #fff;
+        }
+        .content {
+            border: 1px solid #ccc;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .code-block {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .dropdown {
+            margin-top: 10px;
+        }
+
+        .dropdown-trigger{
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .dropdown-content {
+            display: none;
+        }
+        .dropdown-content.active {
+            display: block;
+        }
+        .selected-card {
+            border: 2px solid rgb(0, 110, 255);
+        }
+        .main {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .block {
+            padding: 0 11vw;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0);
+        }
+        .block_header {
+            padding-top: 0px;
+        }
+
+        .block_header_logo {
+            display: inline-block;
+            vertical-align: bottom;
+            width: 64px;
+            height: 64px;
+        }
+
+        .block_header_title {
+            font-size: 50px;
+            font-weight: 700;
+            vertical-align: super;
+            display: inline-block;
+            margin: 0;
+            margin-left: 12px;
+            letter-spacing: -2px;
+        }
+        .block_qr {
+            margin-top: 20px;
+            height: 300px;
+            width: 300px;
+            position: relative;
+        }
+        .block_text {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 27px;
+            line-height: 35px;
+        }
+        .logo{
+            width: 75px;
+            height: 75px;
+            display: flex;
+            background-color: #fff;
+            justify-content: center;
+            overflow: hidden;
+            position: absolute;
+            z-index: 999;
+
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            z-index: 9999;
+        }
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+        }
+        .wrapper {
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .checkmark_circle_success {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 5px;
+            stroke-miterlimit: 10;
+            stroke: #00C851;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+        .checkmark_circle_error {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 5px;
+            stroke-miterlimit: 10;
+            stroke: #ff4444;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+
+
+        .checkmark {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: block;
+            stroke-width: 5px;
+            stroke: white;
+            stroke-miterlimit: 10;
+            margin: 10% auto;
+        }
+
+
+
+        .popup-content.success {
+            background-color: #00C851;
+            border-radius: 100%;
+        }
+
+        .popup-content.error {
+            background-color: #ff4444;
+            border-radius: 100%;
+        }
+
+
+        .checkmark_check {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.9s forwards;
+        }
+
+        .progress {
+            transform: rotate(-90deg);  
+            stroke: black;
+        }
+
+        .progress circle {
+            stroke-dasharray: 130;
+            stroke-dashoffset: 130;
+            animation: dash 1.5s infinite;  
+        }
+
+        @keyframes dash {
+            50% {
+                stroke-dashoffset: 0;
+            }
+            100% {
+                stroke-dashoffset: -130;
+            }  
+        }
+
+
+        .progress {
+            position: absolute;
+            top: 5%;
+            left: 5%;    
+        }
+
+                    
+        .progress--thin {
+                left: auto;
+                right: 5%;
+        }
+
+        @keyframes stroke {
+            100% {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        @keyframes scale {
+            0%, 100% {
+                transform: none;
+            }
+            50% {
+                transform: scale3d(1.1, 1.1, 1);
+            }
+        }
+
+        @keyframes fillsuccess {
+            100% {
+                box-shadow: inset 0px 0px 0px 150px/2 #00C851;
+            }
+        }
+
+        @keyframes fillerror {
+            100% {
+                box-shadow: inset 0px 0px 0px 150px/2 #ff4444;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="js">JavaScript</div>
+            <div class="tab" data-tab="php">PHP</div>
+        </div>
+        <div class="content js">
+            <div class="code-block">
+                <h3 class="dropdown-trigger">Создание счета для оплаты</h3>
+                <div class="dropdown-content">
+                    <p>
+                        Для создания счета для оплаты используется статическая ссылка: <code>https://nscomp.kz/neword/</code> .
+                    </p>
+                    <p>
+                        Чтобы создать счет необходимо отправить запрос на этот URL с двумя параметрами:
+                    </p>
+                    <ul>
+                        <li><code>accid</code>: ID аккаунта, который предоставляется после внесения партнера в систему.</li>
+                        <li><code>price</code>: Конечная сумма для оплаты.</li>
+                    </ul>
+                    <p>
+                        Формат запроса выглядит следующим образом: <code>https://nscomp.kz/neword/${accid}/${price}</code>.
+                    </p>
+                    <p>
+                        Ответ на запрос будет в виде JSON-объекта, например: <code>{"id":1000001660}</code>, где <code>id</code> - это идентификатор созданного счета.
+                    </p>
+                    <p>
+                        Далее для оплаты счета используется статическая ссылка: <code>https://kaspi.kz/pay/NSCompany?service_id=6692&10661=${id}</code>, где <code>${id}</code> необходимо заменить на идентификатор созданного счета. 
+                    </p>
+                    <p>
+                        Таким образом, после создания счета можно использовать данную ссылку для оплаты.
+                    </p>
+                </div>
+            </div>
+            <div class="code-block">
+                <h3 class="dropdown-trigger">Проверка статуса оплаты</h3>
+                <div class="dropdown-content">
+                    <p>
+                        Для проверки статуса оплаты используется статическая ссылка: <code>https://nscomp.kz/checkord/</code>.
+                    </p>
+                    <p>
+                        Для проверки статуса счета необходимо отправить запрос на этот URL с параметром <code>id</code> созданного счета.
+                    </p>
+                    <p>
+                        Формат запроса выглядит следующим образом: <code>https://nscomp.kz/checkord/${id}</code>.
+                    </p>
+                    <p>
+                        Ответ на запрос будет в виде логического объекта, то есть <code>true</code> или <code>false</code>.
+                    </p>
+                    <ul>
+                        <li>Если ответ <code>true</code>, это означает, что оплата прошла успешно.</li>
+                        <li>Если ответ <code>false</code>, это означает, что оплата еще не выполнена.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="code-block">
+                <h3 class="dropdown-trigger">Демо</h3>
+                <div class="dropdown-content">
+                    <div class="container">
+                        <h1>Список товаров</h1>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Товар 1">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Товар 1</h5>
+                                        <p class="card-text">Цена: 10 ₸</p>
+                                        <button class="btn btn-primary">Оплатить</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <img src="https://via.placeholder.com/300" class="card-img-top" alt="Товар 1">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Товар 2</h5>
+                                        <p class="card-text">Цена: 20 ₸</p>
+                                        <button class="btn btn-primary btn-1">Оплатить</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="popup-overlay" id="popup-overlay"></div>
+                            <div class="popup" id="popup">
+                                <div class="card" style="display: flex; justify-content: center; align-items: center;">
+                                    <div class="card-body">
+                                        <div class="block_header">
+                                            <img src="https://kaspi.kz/pay/img/qr_block_logo.svg" class="block_header_logo" alt="">
+                                            <p class="block_header_title">Kaspi QR</p>
+                                        </div>
+                                        <div class="block_text" data-locale-text="text">Сканируйте и платите</div>
+                                        <div class="block_qr" id="qrcode" style="display: flex; justify-content: center; align-items: center;">
+                                            <div class="logo"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="code-block">
+                <h3 class="dropdown-trigger">Скрипт пример</h3>
+                <div class="dropdown-content">
+                    <code>
+                        import QRCode from 'https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js';
+                        async function generateQRCode(price) {
+                            try {
+                                const accid = 42
+                                const url = `https://nscomp.kz/neword/${accid}/${price}`;
+                                const response = await fetch(url);
+                                const data = await response.json();
+                                const id = data.id;
+                                const qrCodeUrl = `https://kaspi.kz/pay/NSCompany?service_id=6692&10661=${id}`;
+                                qrBlock.innerHTML = '';
+                                const qrcode = new QRCode(qrBlock, {
+                                    text: qrCodeUrl,
+                                    width: 300,
+                                    height: 300,
+                                    colorDark: '#000',
+                                    colorLight: '#fff',
+                                    correctLevel: QRCode.CorrectLevel.H
+                                });
+                                const logo = document.createElement('div');
+                                logo.className = 'logo';
+                                logo.innerHTML = 'src to logo';
+                                qrBlock.appendChild(logo);
+                                checkPaymentStatus(id);
+                            } catch (error) {
+                                console.error("error:", error);
+                            }
+                        }
+                
+                        async function checkPaymentStatus(id) {
+                            let count = 0;
+                            const interval = setInterval(async () => {
+                                try {
+                                    const url = `https://nscomp.kz/checkord/${id}`;
+                                    const response = await fetch(url);
+                                    const data = await response.json();
+                
+                                    if (data === true) {
+                                        clearInterval(interval);
+                                    } else if (++count >= 150) { 
+                                        clearInterval(interval);
+                                    }
+                                } catch (error) {
+                                    console.error("error2:", error);
+                                }
+                            }, 2000);
+                        }
+                
+            
+                    </code>
+                </div>
+            </div>
+            
+        </div>
+        <div class="content php hidden">
+            <div class="code-block">
+                <h3 class="dropdown-trigger">Создание счета для оплаты</h3>
+                <div class="dropdown-content">
+                    <p>
+                        Для создания счета для оплаты используется статическая ссылка: <code>https://nscomp.kz/neword/</code> .
+                    </p>
+                    <p>
+                        Чтобы создать счет необходимо отправить запрос на этот URL с двумя параметрами:
+                    </p>
+                    <ul>
+                        <li><code>accid</code>: ID аккаунта, который предоставляется после внесения партнера в систему.</li>
+                        <li><code>price</code>: Конечная сумма для оплаты.</li>
+                    </ul>
+                    <p>
+                        Формат запроса выглядит следующим образом: <code>"https://nscomp.kz/neword/" . $accid . "/" . $price</code>.
+                    </p>
+                    <p>
+                        Ответ на запрос будет в виде JSON-объекта, например: <code>{"id":1000001660}</code>, где <code>id</code> - это идентификатор созданного счета.
+                    </p>
+                    <p>
+                        Далее для оплаты счета используется статическая ссылка: <code>"https://kaspi.kz/pay/NSCompany?service_id=6692&10661=" . $id;</code>, где <code>${id}</code> необходимо заменить на идентификатор созданного счета. 
+                    </p>
+                    <p>
+                        Таким образом, после создания счета можно использовать данную ссылку для оплаты.
+                    </p>
+                </div>
+            </div>
+            <div class="code-block">
+                <h3 class="dropdown-trigger">Проверка статуса оплаты</h3>
+                <div class="dropdown-content">
+                    <p>
+                        Для проверки статуса оплаты используется статическая ссылка: <code>https://nscomp.kz/checkord/</code>.
+                    </p>
+                    <p>
+                        Для проверки статуса счета необходимо отправить запрос на этот URL с параметром <code>id</code> созданного счета.
+                    </p>
+                    <p>
+                        Формат запроса выглядит следующим образом: <code>"https://nscomp.kz/checkord/" . $id;</code>.
+                    </p>
+                    <p>
+                        Ответ на запрос будет в виде логического объекта, то есть <code>true</code> или <code>false</code>.
+                    </p>
+                    <ul>
+                        <li>Если ответ <code>true</code>, это означает, что оплата прошла успешно.</li>
+                        <li>Если ответ <code>false</code>, это означает, что оплата еще не выполнена.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="code-block">
+                <h3 class="dropdown-trigger">Скрипт пример</h3>
+                <div class="dropdown-content">
+                    <code>
+                        
+                            function generateQRCode($price) {
+                                try {
+                                    $accid = 42;
+                                    $url = "https://nscomp.kz/neword/" . $accid . "/" . $price;
+                                    $response = file_get_contents($url);
+                                    $data = json_decode($response);
+                                    $id = $data->id;
+                                    $qrCodeUrl = "https://kaspi.kz/pay/NSCompany?service_id=6692&10661=" . $id;
+                                    
+                                    // here output QR code image with https://api.qrserver.com/
+                                    
+                                    
+                                    checkPaymentStatus($id);
+                                } catch (Exception $error) {
+                                    echo "error: {$error->getMessage()}";
+                                }
+                            }
+
+                            function checkPaymentStatus($id) {
+                                $count = 0;
+                                $max_attempts = 150;
+                                $interval = 2000; // milliseconds
+                                
+                                while ($count < $max_attempts) {
+                                    try {
+                                        $url = "https://nscomp.kz/checkord/" . $id;
+                                        $response = file_get_contents($url);
+                                        $data = json_decode($response);
+                                        
+                                        if ($data === true) {
+                                            break;
+                                        }
+                                        
+                                        usleep($interval * 1000); // microseconds
+                                        $count++;
+                                    } catch (Exception $error) {
+                                        echo "error2: {$error->getMessage()}";
+                                        break;
+                                    }
+                                }
+                            }
+
+                            generateQRCode($price);
+
+                        
+
+                
+            
+                    </code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const dropdownTriggers = document.querySelectorAll('.dropdown-trigger');
+
+            dropdownTriggers.forEach(trigger => {
+                trigger.addEventListener('click', function() {
+                    const content = this.nextElementSibling;
+                    content.classList.toggle('active');
+                });
+            });
+
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+
+                    tabs.forEach(tab => tab.classList.remove('active'));
+                    contents.forEach(content => content.classList.add('hidden'));
+
+                    this.classList.add('active');
+                    document.querySelector(`.content.${tabName}`).classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const cards = document.querySelectorAll('.card');
+            const popup = document.getElementById('popup');
+            const popupOverlay = document.getElementById('popup-overlay');
+            const qrBlock = document.getElementById('qrcode');
+            function openPopup() {
+                popup.style.display = 'block';
+                popupOverlay.style.display = 'block';
+            }
+
+            function closePopup() {
+                popup.style.display = 'none';
+                popupOverlay.style.display = 'none';
+            }
+
+            popupOverlay.addEventListener('click', closePopup);
+            
+            async function generateQRCode(price) {
+                try {
+                    const accid = 42
+                    const url = `https://nscomp.kz/neword/${accid}/${price}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    const id = data.id;
+                    const qrCodeUrl = `https://kaspi.kz/pay/NSCompany?service_id=6692&10661=${id}`;
+                    qrBlock.innerHTML = '';
+                    const qrcode = new QRCode(qrBlock, {
+                        text: qrCodeUrl,
+                        width: 300,
+                        height: 300,
+                        colorDark: '#000',
+                        colorLight: '#fff',
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    const logo = document.createElement('div');
+                    logo.className = 'logo';
+                    logo.innerHTML = '<img src="https://firebasestorage.googleapis.com/v0/b/forpay-9f645.appspot.com/o/1%2Flogo.png?alt=media&token=e83b5089-a86b-4db6-bb70-d0e830dc8e8c" alt="">';
+                    qrBlock.appendChild(logo);
+                    checkPaymentStatus(id);
+                } catch (error) {
+                    console.error("error:", error);
+                }
+            }
+
+            async function checkPaymentStatus(id) {
+                let count = 0;
+                const interval = setInterval(async () => {
+                    try {
+                        const url = `https://nscomp.kz/checkord/${id}`;
+                        const response = await fetch(url);
+                        const data = await response.json();
+
+                        if (data === true) {
+                            clearInterval(interval);
+                            showSuccessAnimation();
+                        } else if (++count >= 150) { 
+                            clearInterval(interval);
+                            showErrorAnimation();
+                        }
+                    } catch (error) {
+                        console.error("error2:", error);
+                    }
+                }, 2000);
+            }
+
+            cards.forEach(card => {
+                const selectButton = card.querySelector(".btn-primary");
+                selectButton.addEventListener("click", function(event) {
+                    event.stopPropagation();
+                    const priceText = card.querySelector(".card-text").textContent;
+                    const price = parseFloat(priceText.replace("Цена: ", "").replace(" ₸", ""));
+                    openPopup();
+                    generateQRCode(price);
+                });
+            });
+
+            function showSuccessAnimation() {
+                popup.innerHTML = `
+                    <div class="popup-content success">
+                        <div class="wrapper">
+                            <svg class="checkmark success" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark_circle_success" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark_check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                `;
+                popup.style.display = 'block';
+                popupOverlay.style.display = 'block';
+            }
+
+            function showErrorAnimation() {
+                popup.innerHTML = `
+                    <div class="popup-content error">
+                        <div class="wrapper">
+                            <svg class="checkmark error" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark_circle_error" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark_check" stroke-linecap="round" fill="none" d="M16 16 36 36 M36 16 16 36"/>
+                            </svg>
+                        </div>
+                    </div>
+                `;
+                popup.style.display = 'block';
+                popupOverlay.style.display = 'block';
+            }
+
+        });
+
+
+    </script>
+</body>
+</html>
